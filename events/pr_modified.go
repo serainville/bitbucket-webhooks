@@ -2,8 +2,7 @@ package events
 
 import "fmt"
 
-// pr:modified payload
-
+// PrModifiedEvent maps to 'pr:modified' Bitbucket Webhook events
 type PrModifiedEvent struct {
 	EventKey            `json:"eventKey"`
 	EventDate           `json:"date"`
@@ -14,7 +13,7 @@ type PrModifiedEvent struct {
 	PreviousTarget      `json:"previousTarget"`
 }
 
-func (p PrModifiedEvent) IsValid() error {
+func (p PrModifiedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

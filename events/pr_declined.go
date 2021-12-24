@@ -2,8 +2,7 @@ package events
 
 import "fmt"
 
-// pr:merged payload
-
+// PrDeclinedEvent maps to 'pr:declined' Bitbucket Webhook events
 type PrDeclinedEvent struct {
 	EventKey    `json:"eventKey"`
 	EventDate   `json:"date"`
@@ -11,7 +10,7 @@ type PrDeclinedEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
-func (p PrDeclinedEvent) IsValid() error {
+func (p PrDeclinedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

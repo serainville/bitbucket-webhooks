@@ -2,9 +2,10 @@ package events
 
 import "fmt"
 
+// PrReviewerNeedsWorkEvent maps to 'pr:reviewer:needs_work' Bitbucket Webhook events
 type PrReviewerNeedsWorkEvent PrReviewerEvent
 
-func (p PrReviewerNeedsWorkEvent) IsValid() error {
+func (p PrReviewerNeedsWorkEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

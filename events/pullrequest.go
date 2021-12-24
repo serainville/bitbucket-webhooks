@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// PullRequestEvent maps to 'pr:opened' Bitbucket Webhook events
 type PullRequestEvent struct {
 	EventKey    `json:"eventKey"`
 	EventDate   `json:"date"`
@@ -11,7 +12,7 @@ type PullRequestEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
-func (p PullRequestEvent) IsValid() error {
+func (p PullRequestEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

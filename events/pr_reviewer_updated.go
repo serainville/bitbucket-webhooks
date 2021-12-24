@@ -2,8 +2,8 @@ package events
 
 import "fmt"
 
-// ReviewerUpdatedEvent maps to pr:reviewer:updated Bitbucket Webhook events
-type ReviewerUpdatedEvent struct {
+// PrReviewerUpdatedEvent maps to pr:reviewer:updated Bitbucket Webhook events
+type PrReviewerUpdatedEvent struct {
 	EventKey         `json:"eventKey"`
 	EventDate        `json:"date"`
 	Actor            `json:"actor"`
@@ -12,7 +12,7 @@ type ReviewerUpdatedEvent struct {
 	RemovedReviewers []Actor `json:"removedReviewers"`
 }
 
-func (p ReviewerUpdatedEvent) IsValid() error {
+func (p PrReviewerUpdatedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

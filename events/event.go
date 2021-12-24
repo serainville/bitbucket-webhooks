@@ -7,7 +7,7 @@ import (
 )
 
 type BitbucketEvent interface {
-	IsValid() error
+	Validation() error
 }
 
 type EventKey string
@@ -140,11 +140,11 @@ func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) 
 		err := json.Unmarshal(payload, &event)
 		return event, err
 	case "pr:reviewer:updated":
-		var event ReviewerUpdatedEvent
+		var event PrReviewerUpdatedEvent
 		err := json.Unmarshal(payload, &event)
 		return event, err
 	case "pr:reviewer:approved":
-		var event ReviewerApprovedEvent
+		var event PrReviewerApprovedEvent
 		err := json.Unmarshal(payload, &event)
 		return event, err
 	case "pr:reviewer:unapproved":
