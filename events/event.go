@@ -6,60 +6,12 @@ import (
 	"reflect"
 )
 
-type EventKey string
-type EventDate string
-
-func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) {
-	switch eventKey {
-	case "repo:refs_changed":
-		var event PushEvent
-		if err := json.Unmarshal(payload, &event); err != nil {
-			return nil, err
-		}
-		return event, nil
-	case "repo:modified":
-		var event ModifiedEvent
-		if err := json.Unmarshal(payload, &event); err != nil {
-			return nil, err
-		}
-		return event, nil
-	case "repo:forked payload":
-		return nil, notImplemented()
-	case "repo:comment:added payload":
-		return nil, notImplemented()
-	case "repo:comment:edited payload":
-		return nil, notImplemented()
-	case "repo:comment:deleted payload":
-		return nil, notImplemented()
-	case "mirror:repo_synchronized":
-		return nil, notImplemented()
-	case "pr:opened":
-		var event PullRequestEvent
-		if err := json.Unmarshal(payload, &event); err != nil {
-			return nil, err
-		}
-		return event, nil
-	default:
-		return nil, fmt.Errorf("%s is not a supported eventKey", eventKey)
-	}
-}
-
-func notImplemented() error {
-	return fmt.Errorf("not implemented")
-}
-
-// GetType returns the name of the event's struct
-func GetType(event BitbucketEvent) string {
-	t := reflect.TypeOf(event)
-	if t.Kind() == reflect.Ptr {
-		return t.Elem().Name()
-	}
-	return t.Name()
-}
-
 type BitbucketEvent interface {
 	IsValid() error
 }
+
+type EventKey string
+type EventDate string
 
 // Actor represents the actor field of a Bitbucket Webhook request
 type Actor struct {
@@ -142,4 +94,112 @@ type RepoVersion struct {
 	Forkable      bool   `json:"forkable"`
 	Project       `json:"project"`
 	Public        bool `json:"public"`
+}
+
+type Participant struct {
+	Actor              `json:"user"`
+	LastReviewedCommit string `json:"lastReviewedCommit"`
+	Role               string `json:"role"`
+	Approved           string `json:"approved"`
+	Status             string `json:"status"`
+}
+
+type PreviousTarget struct {
+	ID              string `json:"id"`
+	DisplayId       string `json:"displayId"`
+	Type            string `json:"type"`
+	LatestCommit    string `json:"latestCommit"`
+	LatestChangeset string `json:"latestChangeset"`
+}
+
+type PrReviewerEvent struct {
+	EventKey       `json:"eventKey"`
+	EventDate      `json:"date"`
+	Actor          `json:"actor"`
+	PullRequest    `json:"pullRequest"`
+	Participant    `json:"participant"`
+	PreviousStatus string `json:"previousStatus"`
+}
+
+func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) {
+	switch eventKey {
+	case "diagnostic:ping":
+		var event DiagnosticPingEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:opened":
+		var event PullRequestEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:from_ref_updated":
+		var event SourceBranchUpdatedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:modified":
+		var event PrModifiedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:reviewer:updated":
+		var event ReviewerUpdatedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:reviewer:approved":
+		var event ReviewerApprovedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:reviewer:unapproved":
+		var event PrReviewerUnapprovedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:reviewer:needs_work":
+		var event PrReviewerNeedsWorkEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "pr:merged":
+		return nil, notImplemented()
+	case "pr:declined":
+		return nil, notImplemented()
+	case "pr:deleted":
+		return nil, notImplemented()
+	case "pr:comment:added":
+		return nil, notImplemented()
+	case "pr:comment:edited":
+		return nil, notImplemented()
+	case "pr:comment:deleted":
+		return nil, notImplemented()
+	case "repo:refs_changed":
+		var event PushEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "repo:modified":
+		var event RepoModifiedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
+	case "repo:forked":
+		return nil, notImplemented()
+	case "repo:comment:added":
+		return nil, notImplemented()
+	case "repo:comment:edited":
+		return nil, notImplemented()
+	case "repo:comment:deleted":
+		return nil, notImplemented()
+	case "mirror:repo_synchronized":
+		return nil, notImplemented()
+
+	default:
+		return nil, fmt.Errorf("%s is not a supported eventKey", eventKey)
+	}
+}
+
+func notImplemented() error {
+	return fmt.Errorf("not implemented")
+}
+
+// GetType returns the name of the event's struct
+func GetType(event BitbucketEvent) string {
+	t := reflect.TypeOf(event)
+	if t.Kind() == reflect.Ptr {
+		return t.Elem().Name()
+	}
+	return t.Name()
 }

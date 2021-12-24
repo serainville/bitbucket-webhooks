@@ -4,7 +4,7 @@ import "fmt"
 
 // repo:modified payload
 
-type ModifiedEvent struct {
+type RepoModifiedEvent struct {
 	EventKey   `json:"eventKey"`
 	EventDate  `json:"date"`
 	Actor      `json:"actor"`
@@ -12,7 +12,7 @@ type ModifiedEvent struct {
 	NewVersion RepoVersion `json:"new"`
 }
 
-func (p ModifiedEvent) IsValid() error {
+func (p RepoModifiedEvent) IsValid() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

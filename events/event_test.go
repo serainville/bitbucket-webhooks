@@ -11,6 +11,12 @@ func TestEventsTypes(t *testing.T) {
 		want         string
 	}{
 		{
+			name:         "Is a valid DiagnosticPingEvent",
+			eventType:    "diagnostic:ping",
+			eventPayload: newDiagnositcPingPayload(),
+			want:         "DiagnosticPingEvent",
+		},
+		{
 			name:         "Is a valid PullRequestEvent",
 			eventType:    "pr:opened",
 			eventPayload: newPullRequestPayload(),
@@ -23,10 +29,10 @@ func TestEventsTypes(t *testing.T) {
 			want:         "PushEvent",
 		},
 		{
-			name:         "Is a valid ModifiedEvent",
+			name:         "Is a valid RepoModifiedEvent",
 			eventType:    "repo:modified",
 			eventPayload: newModifiedRequestPayload(),
-			want:         "ModifiedEvent",
+			want:         "RepoModifiedEvent",
 		},
 	}
 
@@ -35,15 +41,16 @@ func TestEventsTypes(t *testing.T) {
 			event, err := NewBitbucketEvent(tc.eventType, tc.eventPayload)
 			if err != nil {
 				t.Errorf("Want 'nil', got '%s'", err.Error())
-			}
-			eventType := GetType(event)
-			eventValid := event.IsValid()
+			} else {
+				eventType := GetType(event)
+				eventValid := event.IsValid()
 
-			if eventType != tc.want {
-				t.Errorf("Want '%s', got '%s'", tc.want, eventType)
-			}
-			if eventValid != nil {
-				t.Errorf("Want 'nil', got '%s'", eventValid.Error())
+				if eventType != tc.want {
+					t.Errorf("Want '%s', got '%s'", tc.want, eventType)
+				}
+				if eventValid != nil {
+					t.Errorf("Want 'nil', got '%s'", eventValid.Error())
+				}
 			}
 		})
 	}
@@ -65,7 +72,7 @@ func TestNewEvent(t *testing.T) {
 		},
 		{
 			name:         "test test",
-			eventType:    "repo:comment:deleted payload",
+			eventType:    "repo:comment:deleted",
 			eventPayload: []byte(`{}`),
 			want:         "not implemented",
 		},
@@ -84,6 +91,10 @@ func TestNewEvent(t *testing.T) {
 		})
 	}
 
+}
+
+func newDiagnositcPingPayload() []byte {
+	return []byte(`{"test": true}`)
 }
 
 func newPullRequestPayload() []byte {
