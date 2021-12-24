@@ -11,34 +11,27 @@ import (
 )
 
 // Validate a Bitbucket Webhook's HMAC signature to ensure the digest and message are authentic
-func Validate(bytesIn []byte, encodedHash string, secretKey string) error {
-	var validated error
-
+func Validate(message []byte, encodedHash string, secretKey string) error {
 	var hashFn func() hash.Hash
-	var payload string
+	var messageMAC string
 
 	if strings.HasPrefix(encodedHash, "sha1=") {
-		payload = strings.TrimPrefix(encodedHash, "sha1=")
-
+		messageMAC = strings.TrimPrefix(encodedHash, "sha1=")
 		hashFn = sha1.New
-
 	} else if strings.HasPrefix(encodedHash, "sha256=") {
-		payload = strings.TrimPrefix(encodedHash, "sha256=")
-
+		messageMAC = strings.TrimPrefix(encodedHash, "sha256=")
 		hashFn = sha256.New
 	} else {
 		return fmt.Errorf("valid hash prefixes: [sha1=, sha256=], got: %s", encodedHash)
 	}
 
-	messageMAC := payload
 	messageMACBuf, _ := hex.DecodeString(messageMAC)
 
-	res := checkMAC(bytesIn, []byte(messageMACBuf), []byte(secretKey), hashFn)
-	if !res {
-		validated = fmt.Errorf("invalid message digest or secret")
+	if ok := checkMAC(message, []byte(messageMACBuf), []byte(secretKey), hashFn); !ok {
+		return fmt.Errorf("invalid message digest or secret")
 	}
 
-	return validated
+	return nil
 }
 
 func checkMAC(message, messageMAC, key []byte, sha func() hash.Hash) bool {
