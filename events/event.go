@@ -138,7 +138,7 @@ type RepoVersion struct {
 	Name          string `json:"name"`
 	ScmID         string `json:"scmId"`
 	State         string `json:"state"`
-	StatusMessage string `json:"statusMessage`
+	StatusMessage string `json:"statusMessage"`
 	Forkable      bool   `json:"forkable"`
 	Project       `json:"project"`
 	Public        bool `json:"public"`
