@@ -61,6 +61,7 @@ type BitbucketEvent interface {
 	IsValid() error
 }
 
+// Actor represents the actor field of a Bitbucket Webhook request
 type Actor struct {
 	Name         string `json:"name"`
 	EmailAddress string `json:"emailAddress"`
@@ -71,6 +72,7 @@ type Actor struct {
 	Type         string `json:"type"`
 }
 
+// PullRequest represents the pullRequest field of a Bitbucket Webhook request
 type PullRequest struct {
 	ID          uint64 `json:"id"`
 	Version     uint64 `json:"version"`
@@ -84,6 +86,7 @@ type PullRequest struct {
 	ToRef       `json:"toRef"`
 }
 
+// FromRef represents the fromRef field of a Bitbucket Webhook request
 type FromRef struct {
 	ID           string `json:"id"`
 	DisplayId    string `json:"displayId"`
