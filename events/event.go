@@ -156,11 +156,17 @@ func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) 
 		err := json.Unmarshal(payload, &event)
 		return event, err
 	case "pr:merged":
-		return nil, notImplemented()
+		var event PrMergedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
 	case "pr:declined":
-		return nil, notImplemented()
+		var event PrDeclinedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
 	case "pr:deleted":
-		return nil, notImplemented()
+		var event PrDeletedEvent
+		err := json.Unmarshal(payload, &event)
+		return event, err
 	case "pr:comment:added":
 		return nil, notImplemented()
 	case "pr:comment:edited":
