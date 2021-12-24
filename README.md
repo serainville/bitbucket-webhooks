@@ -1,4 +1,4 @@
-![example workflow](https://github.com/serainville/bitbucket-webhooks/actions/workflows/go.yaml/badge.svg)
+![example workflow](https://github.com/serainville/bitbucket-webhooks/actions/workflows/go.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/serainville/bitbucket-webhooks)](https://goreportcard.com/report/github.com/serainville/bitbucket-webhooks)
 # Go Bitbucket Webhook Module
 ## Overview
