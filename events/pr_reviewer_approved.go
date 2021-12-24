@@ -2,9 +2,10 @@ package events
 
 import "fmt"
 
-type ReviewerApprovedEvent PrReviewerEvent
+// PrReviewerApprovedEvent maps to 'pr:reviewer:approved' Bitbucket Webhook events
+type PrReviewerApprovedEvent PrReviewerEvent
 
-func (p ReviewerApprovedEvent) IsValid() error {
+func (p PrReviewerApprovedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

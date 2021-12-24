@@ -2,7 +2,7 @@ package events
 
 import "fmt"
 
-// SourceBranchUpdatedEvent maps to a from_ref_updated Bitbucket Webhook event
+// SourceBranchUpdatedEvent maps to 'from_ref_updated' Bitbucket Webhook events
 type SourceBranchUpdatedEvent struct {
 	EventKey         `json:"eventKey"`
 	EventDate        `json:"date"`
@@ -11,7 +11,7 @@ type SourceBranchUpdatedEvent struct {
 	PreviousFromHash string `json:"previousFramHash"`
 }
 
-func (p SourceBranchUpdatedEvent) IsValid() error {
+func (p SourceBranchUpdatedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}

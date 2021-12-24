@@ -43,13 +43,13 @@ func TestEventsTypes(t *testing.T) {
 				t.Errorf("Want 'nil', got '%s'", err.Error())
 			} else {
 				eventType := GetType(event)
-				eventValid := event.IsValid()
+				eventValidation := event.Validation()
 
 				if eventType != tc.want {
 					t.Errorf("Want '%s', got '%s'", tc.want, eventType)
 				}
-				if eventValid != nil {
-					t.Errorf("Want 'nil', got '%s'", eventValid.Error())
+				if eventValidation != nil {
+					t.Errorf("Want 'nil', got '%s'", eventValidation.Error())
 				}
 			}
 		})

@@ -2,8 +2,7 @@ package events
 
 import "fmt"
 
-// repo:modified payload
-
+// RepModifiedEvent maps to 'repo:modified' Bitbucket Webhook events
 type RepoModifiedEvent struct {
 	EventKey   `json:"eventKey"`
 	EventDate  `json:"date"`
@@ -12,7 +11,7 @@ type RepoModifiedEvent struct {
 	NewVersion RepoVersion `json:"new"`
 }
 
-func (p RepoModifiedEvent) IsValid() error {
+func (p RepoModifiedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
 	}
