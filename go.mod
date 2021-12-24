@@ -1,3 +1,3 @@
-module github/serainville/bitbucket-webhooks
+module github.com/serainville/bitbucket-webhooks
 
 go 1.17

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github/serainville/bitbucket-webhooks/events"
+	"github.com/serainville/bitbucket-webhooks/events"
 )
 
 func main() {
