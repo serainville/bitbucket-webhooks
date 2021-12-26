@@ -11,6 +11,7 @@ type PushEvent struct {
 	Changes    []Changes `json:"changes"`
 }
 
+// Validation checks whether a repo:refs_changed event is valid
 func (p PushEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")

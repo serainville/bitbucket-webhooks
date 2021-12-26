@@ -10,6 +10,7 @@ type PrMergedEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
+// Validation checks whether a pr:merged event is valid
 func (p PrMergedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
