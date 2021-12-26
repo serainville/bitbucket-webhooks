@@ -10,6 +10,7 @@ type PrDeletedEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
+// Validation checks whether a pr:deleted event is valid
 func (p PrDeletedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")

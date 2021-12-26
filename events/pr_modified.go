@@ -13,6 +13,7 @@ type PrModifiedEvent struct {
 	PreviousTarget      `json:"previousTarget"`
 }
 
+// Validation checks whether a pr:modified event is valid
 func (p PrModifiedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
