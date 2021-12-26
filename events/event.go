@@ -6,11 +6,15 @@ import (
 	"reflect"
 )
 
+//BitbucketEvent is an interface for all event types received from a Bitbucket Webhook
 type BitbucketEvent interface {
 	Validation() error
 }
 
+// EventKey stores the key for an event received by Bitbucket
 type EventKey string
+
+// EventDate stores the date an event was trigger by Bitbucket
 type EventDate string
 
 // Actor represents the actor field of a Bitbucket Webhook request
@@ -34,25 +38,19 @@ type PullRequest struct {
 	Closed      bool   `json:"closed"`
 	CreatedDate uint64 `json:"createdDate"`
 	UpdatedDate uint64 `json:"updatedDate"`
-	FromRef     `json:"fromRef"`
-	ToRef       `json:"toRef"`
+	FromRef     Ref    `json:"fromRef"`
+	ToRef       Ref    `json:"toRef"`
 }
 
-// FromRef represents the fromRef field of a Bitbucket Webhook request
-type FromRef struct {
+// Ref represents the fromRef field of a Bitbucket Webhook request
+type Ref struct {
 	ID           string `json:"id"`
-	DisplayId    string `json:"displayId"`
+	DisplayID    string `json:"displayId"`
 	LatestCommit string `json:"latestCommit"`
 	Repository   `json:"repository"`
 }
 
-type ToRef struct {
-	ID           string `json:"id"`
-	DisplayId    string `json:"displayId"`
-	LatestCommit string `json:"latestCommit"`
-	Repository   `json:"repository"`
-}
-
+// Repository maps to the repository key from a Bitbucket event
 type Repository struct {
 	Slug          string `json:"slug"`
 	ID            uint64 `json:"id"`
@@ -65,6 +63,7 @@ type Repository struct {
 	Public        bool `json:"public"`
 }
 
+// Project maps to the project key from a Bitbucket event
 type Project struct {
 	Key    string `json:"key"`
 	ID     uint64 `json:"id"`
@@ -73,17 +72,19 @@ type Project struct {
 	Type   string `json:"type"`
 }
 
+// Changes maps to the changes key from a Bitbucket event
 type Changes struct {
 	Ref struct {
 		ID        string `json:"id"`
 		DisplayID string `json:"displayId"`
 		Type      string `json:"type"`
 	} `json:"ref"`
-	RefId  string `json:"refId"`
+	RefID  string `json:"refId"`
 	ToHash string `json:"toHash"`
 	Type   string `json:"type"`
 }
 
+// RepoVersion maps to the version key of a Bitbucket event
 type RepoVersion struct {
 	Slug          string `json:"slug"`
 	ID            int    `json:"id"`
@@ -96,6 +97,7 @@ type RepoVersion struct {
 	Public        bool `json:"public"`
 }
 
+// Participant maps to the participant key of a Bitbucket event
 type Participant struct {
 	Actor              `json:"user"`
 	LastReviewedCommit string `json:"lastReviewedCommit"`
@@ -104,14 +106,16 @@ type Participant struct {
 	Status             string `json:"status"`
 }
 
+// PreviousTarget maps to the previousTarget key of a Bitbucket event
 type PreviousTarget struct {
 	ID              string `json:"id"`
-	DisplayId       string `json:"displayId"`
+	DisplayID       string `json:"displayId"`
 	Type            string `json:"type"`
 	LatestCommit    string `json:"latestCommit"`
 	LatestChangeset string `json:"latestChangeset"`
 }
 
+// PrReviewerEvent maps to common reviewer events of a Bitbucket event
 type PrReviewerEvent struct {
 	EventKey       `json:"eventKey"`
 	EventDate      `json:"date"`
@@ -121,6 +125,7 @@ type PrReviewerEvent struct {
 	PreviousStatus string `json:"previousStatus"`
 }
 
+// NewBitbucketEvent creates a new event from the body of a Bitbucket event
 func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) {
 	switch eventKey {
 	case "diagnostic:ping":

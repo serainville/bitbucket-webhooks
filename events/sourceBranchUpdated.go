@@ -11,6 +11,7 @@ type SourceBranchUpdatedEvent struct {
 	PreviousFromHash string `json:"previousFramHash"`
 }
 
+// Validation checks whether a from_ref_updated event is valid
 func (p SourceBranchUpdatedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")

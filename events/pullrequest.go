@@ -12,6 +12,7 @@ type PullRequestEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
+// Validation checks whether a pr:opened event is valid
 func (p PullRequestEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
