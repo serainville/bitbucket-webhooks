@@ -12,6 +12,7 @@ type PrReviewerUpdatedEvent struct {
 	RemovedReviewers []Actor `json:"removedReviewers"`
 }
 
+// Validation checks whether a pr:reviewer:updated event is valid
 func (p PrReviewerUpdatedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")

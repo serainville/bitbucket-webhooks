@@ -10,6 +10,7 @@ type PrDeclinedEvent struct {
 	PullRequest `json:"pullRequest"`
 }
 
+// Validation checks whether a pr:declined event is valid
 func (p PrDeclinedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")

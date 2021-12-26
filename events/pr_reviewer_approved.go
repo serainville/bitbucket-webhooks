@@ -5,6 +5,7 @@ import "fmt"
 // PrReviewerApprovedEvent maps to 'pr:reviewer:approved' Bitbucket Webhook events
 type PrReviewerApprovedEvent PrReviewerEvent
 
+// Validation checks whether a pr:reviewer:approved event is valid
 func (p PrReviewerApprovedEvent) Validation() error {
 	if p.EventKey == "" {
 		return fmt.Errorf("eventKey cannot be empty")
