@@ -1,9 +1,14 @@
 package events
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"reflect"
+
+	"github.com/serainville/bitbucket-webhooks/signature"
 )
 
 //BitbucketEvent is an interface for all event types received from a Bitbucket Webhook
@@ -125,81 +130,183 @@ type PrReviewerEvent struct {
 	PreviousStatus string `json:"previousStatus"`
 }
 
-// NewBitbucketEvent creates a new event from the body of a Bitbucket event
-func NewBitbucketEvent(eventKey string, payload []byte) (BitbucketEvent, error) {
-	switch eventKey {
+// WebhookHandler is used to handle incoming Bitbuckt Webhook events
+type WebhookHandler struct {
+	Secret string
+	// VerifySignature sets whether an HMAC signature is validated or not.
+	VerifySignature bool
+	signature       string
+	payload         []byte
+}
+
+// WebhookEvent stores an event received from a Bitbucket Webhook request
+type WebhookEvent struct {
+	eventKey  string
+	signature string
+	payload   []byte
+	Event     BitbucketEvent
+}
+
+// CreateWebookHandler with default settings
+func CreateWebookHandler() *WebhookHandler {
+	return &WebhookHandler{
+		VerifySignature: true,
+	}
+}
+
+// WebhookEvent processes an incoming Bitbucket Webhook event and returns a new WebhookEvent
+func (w *WebhookHandler) WebhookEvent(resp http.ResponseWriter, req *http.Request) (WebhookEvent, error) {
+	payload, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return WebhookEvent{}, fmt.Errorf("could not read body. %v", err)
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(w.payload))
+
+	err = w.ValidateSignature()
+	if err != nil {
+		return WebhookEvent{}, err
+	}
+
+	event := WebhookEvent{
+		eventKey:  req.Header["X-Event-Key"][0],
+		signature: req.Header["X-Hub-Signature"][0],
+		payload:   payload,
+	}
+
+	if err := event.Unmarshal(); err != nil {
+		return event, err
+	}
+
+	return event, nil
+
+}
+
+// Unmarshal a Bitbucket Webhook event into a BitbucketEvent type
+// TODO: This should be refactored to deduplicate each case
+func (w *WebhookEvent) Unmarshal() error {
+
+	switch w.eventKey {
 	case "diagnostic:ping":
 		var event DiagnosticPingEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:opened":
 		var event PullRequestEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:from_ref_updated":
 		var event SourceBranchUpdatedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:modified":
 		var event PrModifiedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:reviewer:updated":
 		var event PrReviewerUpdatedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:reviewer:approved":
 		var event PrReviewerApprovedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:reviewer:unapproved":
 		var event PrReviewerUnapprovedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:reviewer:needs_work":
 		var event PrReviewerNeedsWorkEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:merged":
 		var event PrMergedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:declined":
 		var event PrDeclinedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:deleted":
 		var event PrDeletedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "pr:comment:added":
-		return nil, notImplemented()
+		return notImplemented()
 	case "pr:comment:edited":
-		return nil, notImplemented()
+		return notImplemented()
 	case "pr:comment:deleted":
-		return nil, notImplemented()
+		return notImplemented()
 	case "repo:refs_changed":
 		var event PushEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "repo:modified":
 		var event RepoModifiedEvent
-		err := json.Unmarshal(payload, &event)
-		return event, err
+		err := json.Unmarshal(w.payload, &event)
+		if err != nil {
+			return err
+		}
+		w.Event = event
 	case "repo:forked":
-		return nil, notImplemented()
+		return notImplemented()
 	case "repo:comment:added":
-		return nil, notImplemented()
+		return notImplemented()
 	case "repo:comment:edited":
-		return nil, notImplemented()
+		return notImplemented()
 	case "repo:comment:deleted":
-		return nil, notImplemented()
+		return notImplemented()
 	case "mirror:repo_synchronized":
-		return nil, notImplemented()
+		return notImplemented()
 
 	default:
-		return nil, fmt.Errorf("%s is not a supported eventKey", eventKey)
+		return fmt.Errorf("%s is not a supported eventKey", w.eventKey)
 	}
+
+	return fmt.Errorf("failed to unmarshal event payload")
+}
+
+// ValidateSignature is used to check the authenticty of a request by checking its HMAC signature.
+func (w *WebhookHandler) ValidateSignature() error {
+	if len(w.Secret) > 0 && w.VerifySignature && len(w.signature) > 0 {
+		return signature.Validate(w.payload, w.signature, w.Secret)
+	}
+	return nil
 }
 
 func notImplemented() error {
