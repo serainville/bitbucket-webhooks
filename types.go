@@ -18,16 +18,14 @@ type DiagnosticPingEvent struct {
 
 // PullRequestPayload maps to "pr:opened" Bitbucket Webook events
 type PullRequestOpenedPayload struct {
-	EventKey    `json:"eventKey"`
-	EventDate   `json:"date"`
+	commonEvent
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestModifiedPayload maps to "pr:modified" Bitbucket Webhook events
 type PullRequestModifiedPayload struct {
-	EventKey            `json:"eventKey"`
-	EventDate           `json:"date"`
+	commonEvent
 	Actor               `json:"actor"`
 	PullRequest         `json:"pullRequest"`
 	PreviousTitle       string `json:"previousTitle"`
@@ -37,32 +35,28 @@ type PullRequestModifiedPayload struct {
 
 // PullRequestDeletedPayload maps to "pr:deleted" Bitbucket Webhook events
 type PullRequestDeletedPayload struct {
-	EventKey    `json:"eventKey"`
-	EventDate   `json:"date"`
+	commonEvent
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestMergedPayload maps to "pr:merged" Bitbucket Webhook events
 type PullRequestMergedPayload struct {
-	EventKey    `json:"eventKey"`
-	EventDate   `json:"date"`
+	commonEvent
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestDeclinedPayload maps to 'pr:declined' Bitbucket Webhook events
 type PullRequestDeclinedPayload struct {
-	EventKey    `json:"eventKey"`
-	EventDate   `json:"date"`
+	commonEvent
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestReviewerPayload maps to "pr:reviewer:approved", "pr:reviewer:needs_work", and "pr:reviewer:unapproved" Bitbucket events
 type PullRequestReviewerPayload struct {
-	EventKey       `json:"eventKey"`
-	EventDate      `json:"date"`
+	commonEvent
 	Actor          `json:"actor"`
 	PullRequest    `json:"pullRequest"`
 	Participant    `json:"participant"`
@@ -71,8 +65,7 @@ type PullRequestReviewerPayload struct {
 
 // PullRequestReviewerUpdatedPayload maps to a "pr:reviewer:updated" Bitbucket event
 type PullRequestReviewerUpdatedPayload struct {
-	EventKey         `json:"eventKey"`
-	EventDate        `json:"date"`
+	commonEvent
 	Actor            `json:"actor"`
 	PullRequest      `json:"pullRequest"`
 	AddedReviewers   []Actor `json:"addedReviewers"`
@@ -80,24 +73,20 @@ type PullRequestReviewerUpdatedPayload struct {
 }
 
 type PullRequestCommentAddedPayload struct {
-	EventKey  `json:"eventKey"`
-	EventDate `json:"date"`
+	commonEvent
 }
 
 type PullRequestCommentEditedPayload struct {
-	EventKey  `json:"eventKey"`
-	EventDate `json:"date"`
+	commonEvent
 }
 
 type PullRequestCommentDeletedPayload struct {
-	EventKey  `json:"eventKey"`
-	EventDate `json:"date"`
+	commonEvent
 }
 
 // RepoRefsChangedPayload maps to 'repo:refs_changed' Bitbucket Webhook events
 type RepoRefsChangedPayload struct {
-	EventKey   `json:"eventKey"`
-	EventDate  `json:"date"`
+	commonEvent
 	Actor      `json:"actor"`
 	Repository `json:"repository"`
 	Changes    []Changes `json:"changes"`
@@ -105,8 +94,7 @@ type RepoRefsChangedPayload struct {
 
 // RepoModifiedPayload maps to 'repo:modified' Bitbucket Webhook events
 type RepoModifiedPayload struct {
-	EventKey   `json:"eventKey"`
-	EventDate  `json:"date"`
+	commonEvent
 	Actor      `json:"actor"`
 	OldVersion RepoVersion `json:"old"`
 	NewVersion RepoVersion `json:"new"`
@@ -114,8 +102,7 @@ type RepoModifiedPayload struct {
 
 // FromRefUpdatedPayload maps to 'from_ref_updated' Bitbucket Webhook events
 type FromRefUpdatedPayload struct {
-	EventKey         `json:"eventKey"`
-	EventDate        `json:"date"`
+	commonEvent
 	Actor            `json:"actor"`
 	PullRequest      `json:"pullRequest"`
 	PreviousFromHash string `json:"previousFramHash"`
