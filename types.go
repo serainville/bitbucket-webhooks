@@ -224,6 +224,7 @@ type PrReviewerEvent struct {
 	PreviousStatus string `json:"previousStatus"`
 }
 
+// Comment maps to the `comment` key of a Bitbucket event
 type Comment struct {
 	Properties struct {
 		RepositoryID uint `json:"repositoryId"`
