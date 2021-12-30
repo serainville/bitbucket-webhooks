@@ -85,11 +85,20 @@ type PullRequestCommentAddedPayload struct {
 // PullRequestCommentEditedPayload maps to a 'pr:comment:edited' Bitbucket webhook event
 type PullRequestCommentEditedPayload struct {
 	commonEvent
+	Actor           `json:"actor"`
+	PullRequest     `json:"pullRequest"`
+	Comment         `json:"comment"`
+	CommentParentID uint   `json:"commentParentId"`
+	PreviousComment string `json:"previousComment"`
 }
 
 // PullRequestCommentDeletedPayload maps to a 'pr:comment:deleted' Bitbucket webhook event
 type PullRequestCommentDeletedPayload struct {
 	commonEvent
+	Actor           `json:"actor"`
+	PullRequest     `json:"pullRequest"`
+	Comment         `json:"comment"`
+	CommentParentID uint `json:"commentParentId"`
 }
 
 // RepoRefsChangedPayload maps to 'repo:refs_changed' Bitbucket Webhook events
