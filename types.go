@@ -74,7 +74,12 @@ type PullRequestReviewerUpdatedPayload struct {
 
 // PullRequestCommentAddedPayload maps to a 'pr:comment:added' Bitbucket webhook event
 type PullRequestCommentAddedPayload struct {
-	commonEvent
+	EventKey string `json:"eventKey"`
+	EventDate
+	Actor           `json:"actor"`
+	PullRequest     `json:"pullRequest"`
+	Comment         `json:"comment"`
+	CommentParentID uint `json:"commentParentId"`
 }
 
 // PullRequestCommentEditedPayload maps to a 'pr:comment:edited' Bitbucket webhook event
@@ -217,4 +222,19 @@ type PrReviewerEvent struct {
 	PullRequest    `json:"pullRequest"`
 	Participant    `json:"participant"`
 	PreviousStatus string `json:"previousStatus"`
+}
+
+// Comment maps to the `comment` key of a Bitbucket event
+type Comment struct {
+	Properties struct {
+		RepositoryID uint `json:"repositoryId"`
+	} `json:"properties"`
+	ID          uint   `json:"id"`
+	Version     uint   `json:"version"`
+	Text        string `json:"text"`
+	Actor       `json:"author"`
+	CreatedDate uint                     `json:"createdDate"`
+	UpdatedDate uint                     `json:"updatedDate"`
+	Comments    []Comment                `json:"comments"`
+	Tasks       []map[string]interface{} `json:"tasks"`
 }
