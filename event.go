@@ -38,7 +38,7 @@ func (hook *Webhook) Secret(value string) {
 // when the 'X-Hub-Signature' header key is set.
 func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, error) {
 
-	event := Event(req.Header.Get("X-Event-Type"))
+	event := Event(req.Header.Get("X-Event-Key"))
 	if event == "" {
 		return nil, fmt.Errorf("'%s' is not a valid event type", event)
 	}
@@ -68,7 +68,7 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 		return nil, errors.New("at least one bitbucket event type must be specified")
 	}
 
-	switch bitbucketEvent {
+	switch event {
 	case "pr:opened":
 		var pl PullRequestOpenedPayload
 		err := json.Unmarshal(payload, &pl)
@@ -134,6 +134,10 @@ func (hook *Webhook) VerifySignature(payload []byte, encodedHash, secret string)
 		return errors.New("requires webhook secret to be set")
 	}
 
+	if len(payload) == 0 {
+		return errors.New("payload cannot be empty")
+	}
+
 	var hashFn func() hash.Hash
 	var messageMAC string
 
@@ -151,12 +155,14 @@ func (hook *Webhook) VerifySignature(payload []byte, encodedHash, secret string)
 	}
 
 	mac := hmac.New(hashFn, []byte(secret))
-	_, err = mac.Write([]byte(messageMAC))
+	_, err = mac.Write(payload)
 	if err != nil {
 		return fmt.Errorf("failed to write message as a MAC: %w", err)
 	}
 
-	if ok := hmac.Equal(messageMACBuf, mac.Sum(nil)); !ok {
+	expectedMAC := mac.Sum(nil)
+
+	if ok := hmac.Equal(messageMACBuf, expectedMAC); !ok {
 		return errors.New("HMAC signatures do not match")
 	}
 
