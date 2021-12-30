@@ -72,7 +72,7 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 		return pl, err
 	case "pr:deleted":
 		var pl PullRequestDeletedPayload
-		err := json.Unmarshal(payload, pl)
+		err := json.Unmarshal(payload, &pl)
 		return pl, err
 	case "pr:comment:added":
 		var pl PullRequestCommentAddedPayload
