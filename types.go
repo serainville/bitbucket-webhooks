@@ -6,8 +6,10 @@ type EventKey string
 // EventDate stores the date an event was trigger by Bitbucket
 type EventDate string
 
-type commonEvent struct {
-	EventKey  string `json:"eventKey"`
+type commonBitbucketEventFields struct {
+	// EventKey is the event key of a Bitbucket Webhook
+	EventKey string `json:"eventKey"`
+	// EventDate is the date the event occurred
 	EventDate string `json:"date"`
 }
 
@@ -18,14 +20,14 @@ type DiagnosticPingEvent struct {
 
 // PullRequestOpenedPayload maps to "pr:opened" Bitbucket Webook events
 type PullRequestOpenedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestModifiedPayload maps to "pr:modified" Bitbucket Webhook events
 type PullRequestModifiedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor               `json:"actor"`
 	PullRequest         `json:"pullRequest"`
 	PreviousTitle       string `json:"previousTitle"`
@@ -35,28 +37,28 @@ type PullRequestModifiedPayload struct {
 
 // PullRequestDeletedPayload maps to "pr:deleted" Bitbucket Webhook events
 type PullRequestDeletedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestMergedPayload maps to "pr:merged" Bitbucket Webhook events
 type PullRequestMergedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestDeclinedPayload maps to 'pr:declined' Bitbucket Webhook events
 type PullRequestDeclinedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor       `json:"actor"`
 	PullRequest `json:"pullRequest"`
 }
 
 // PullRequestReviewerPayload maps to "pr:reviewer:approved", "pr:reviewer:needs_work", and "pr:reviewer:unapproved" Bitbucket events
 type PullRequestReviewerPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor          `json:"actor"`
 	PullRequest    `json:"pullRequest"`
 	Participant    `json:"participant"`
@@ -65,7 +67,7 @@ type PullRequestReviewerPayload struct {
 
 // PullRequestReviewerUpdatedPayload maps to a "pr:reviewer:updated" Bitbucket event
 type PullRequestReviewerUpdatedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor            `json:"actor"`
 	PullRequest      `json:"pullRequest"`
 	AddedReviewers   []Actor `json:"addedReviewers"`
@@ -74,8 +76,7 @@ type PullRequestReviewerUpdatedPayload struct {
 
 // PullRequestCommentAddedPayload maps to a 'pr:comment:added' Bitbucket webhook event
 type PullRequestCommentAddedPayload struct {
-	EventKey string `json:"eventKey"`
-	EventDate
+	commonBitbucketEventFields
 	Actor           `json:"actor"`
 	PullRequest     `json:"pullRequest"`
 	Comment         `json:"comment"`
@@ -84,17 +85,27 @@ type PullRequestCommentAddedPayload struct {
 
 // PullRequestCommentEditedPayload maps to a 'pr:comment:edited' Bitbucket webhook event
 type PullRequestCommentEditedPayload struct {
-	commonEvent
-	Actor           `json:"actor"`
-	PullRequest     `json:"pullRequest"`
-	Comment         `json:"comment"`
-	CommentParentID uint   `json:"commentParentId"`
+	commonBitbucketEventFields
+
+	// Actor is the user that edited the comment
+	Actor `json:"actor"`
+
+	// PullRequest is the pull request where the comment exists
+	PullRequest `json:"pullRequest"`
+
+	// Comment is the comment edited
+	Comment `json:"comment"`
+
+	// CommentParentID is the ID of the parent comment if one exists.
+	CommentParentID uint `json:"commentParentId"`
+
+	// PreviousComment is the text of the previous comment.
 	PreviousComment string `json:"previousComment"`
 }
 
 // PullRequestCommentDeletedPayload maps to a 'pr:comment:deleted' Bitbucket webhook event
 type PullRequestCommentDeletedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor           `json:"actor"`
 	PullRequest     `json:"pullRequest"`
 	Comment         `json:"comment"`
@@ -103,7 +114,7 @@ type PullRequestCommentDeletedPayload struct {
 
 // RepoRefsChangedPayload maps to 'repo:refs_changed' Bitbucket Webhook events
 type RepoRefsChangedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor      `json:"actor"`
 	Repository `json:"repository"`
 	Changes    []Changes `json:"changes"`
@@ -111,7 +122,7 @@ type RepoRefsChangedPayload struct {
 
 // RepoModifiedPayload maps to 'repo:modified' Bitbucket Webhook events
 type RepoModifiedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor      `json:"actor"`
 	OldVersion RepoVersion `json:"old"`
 	NewVersion RepoVersion `json:"new"`
@@ -119,7 +130,7 @@ type RepoModifiedPayload struct {
 
 // FromRefUpdatedPayload maps to 'from_ref_updated' Bitbucket Webhook events
 type FromRefUpdatedPayload struct {
-	commonEvent
+	commonBitbucketEventFields
 	Actor            `json:"actor"`
 	PullRequest      `json:"pullRequest"`
 	PreviousFromHash string `json:"previousFramHash"`
@@ -221,16 +232,6 @@ type PreviousTarget struct {
 	Type            string `json:"type"`
 	LatestCommit    string `json:"latestCommit"`
 	LatestChangeset string `json:"latestChangeset"`
-}
-
-// PrReviewerEvent maps to common reviewer events of a Bitbucket event
-type PrReviewerEvent struct {
-	EventKey       `json:"eventKey"`
-	EventDate      `json:"date"`
-	Actor          `json:"actor"`
-	PullRequest    `json:"pullRequest"`
-	Participant    `json:"participant"`
-	PreviousStatus string `json:"previousStatus"`
 }
 
 // Comment maps to the `comment` key of a Bitbucket event
