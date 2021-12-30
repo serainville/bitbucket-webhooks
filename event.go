@@ -52,7 +52,7 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 		return nil, fmt.Errorf("could not read request body: %w", err)
 	}
 
-	if err := hook.VerifySignture(payload, req.Header.Get("X-Hub-Signature"), hook.secret); err != nil {
+	if err := hook.VerifySignature(payload, req.Header.Get("X-Hub-Signature"), hook.secret); err != nil {
 		return nil, fmt.Errorf("could not validate signature: %w", err)
 	}
 	var bitbucketEvent Event
@@ -125,7 +125,7 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 }
 
 // VerifySignature is used to check an HMAC signature
-func (hook *Webhook) VerifySignture(payload []byte, encodedHash, secret string) error {
+func (hook *Webhook) VerifySignature(payload []byte, encodedHash, secret string) error {
 	if encodedHash == "" {
 		return nil
 	}
