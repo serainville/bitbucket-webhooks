@@ -43,7 +43,8 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 		return nil, fmt.Errorf("'%s' is not a valid event type", event)
 	}
 
-	if event == "diagnostic:ping" {
+	fmt.Println(req.Header)
+	if event == "diagnostics:ping" {
 		return DiagnosticPingEvent{Test: true}, nil
 	}
 
