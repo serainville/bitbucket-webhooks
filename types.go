@@ -16,7 +16,7 @@ type DiagnosticPingEvent struct {
 	Test bool `json:"test"`
 }
 
-// PullRequestPayload maps to "pr:opened" Bitbucket Webook events
+// PullRequestOpenedPayload maps to "pr:opened" Bitbucket Webook events
 type PullRequestOpenedPayload struct {
 	commonEvent
 	Actor       `json:"actor"`
@@ -72,14 +72,17 @@ type PullRequestReviewerUpdatedPayload struct {
 	RemovedReviewers []Actor `json:"removedReviewers"`
 }
 
+// PullRequestCommentAddedPayload maps to a 'pr:comment:added' Bitbucket webhook event
 type PullRequestCommentAddedPayload struct {
 	commonEvent
 }
 
+// PullRequestCommentEditedPayload maps to a 'pr:comment:edited' Bitbucket webhook event
 type PullRequestCommentEditedPayload struct {
 	commonEvent
 }
 
+// PullRequestCommentDeletedPayload maps to a 'pr:comment:deleted' Bitbucket webhook event
 type PullRequestCommentDeletedPayload struct {
 	commonEvent
 }

@@ -13,22 +13,29 @@ import (
 	"strings"
 )
 
+// Event holds the Bitbucket Webhook event type
 type Event string
 
+// Option holds a webhook option
 type Option string
 
+// Webhook is used to handle Bitbucket webhook events
 type Webhook struct {
 	secret string
 }
 
+// New creates a new Webhook with default settings
 func New(options ...Option) *Webhook {
 	return &Webhook{}
 }
 
+// Secret is used to set a Webook's secret
 func (hook *Webhook) Secret(value string) {
 	hook.secret = value
 }
 
+// Parse an a Bitbucket Webhook request. The HMAC signature of the request will be validated
+// when the 'X-Hub-Signature' header key is set.
 func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, error) {
 
 	event := Event(req.Header.Get("X-Event-Type"))
