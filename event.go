@@ -36,7 +36,7 @@ func (hook *Webhook) Secret(value string) {
 
 // Parse an a Bitbucket Webhook request. The HMAC signature of the request will be validated
 // when the 'X-Hub-Signature' header key is set.
-func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, error) {
+func (hook *Webhook) Parse(req *http.Request) (interface{}, error) {
 
 	event := Event(req.Header.Get("X-Event-Key"))
 	if event == "" {
@@ -55,18 +55,6 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 
 	if err := hook.VerifySignature(payload, req.Header.Get("X-Hub-Signature"), hook.secret); err != nil {
 		return nil, fmt.Errorf("could not validate signature: %w", err)
-	}
-	var bitbucketEvent Event
-
-	var found bool
-	for _, evt := range events {
-		found = true
-		bitbucketEvent = evt
-		break
-	}
-
-	if !found {
-		return nil, errors.New("at least one bitbucket event type must be specified")
 	}
 
 	switch event {
@@ -107,21 +95,21 @@ func (hook *Webhook) Parse(req *http.Request, events ...Event) (interface{}, err
 		err := json.Unmarshal(payload, &pl)
 		return pl, err
 	case "repo:refs_changed":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "repo:modified":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "repo:forked":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "repo:comment:added":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "repo:comment:edited":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "repo:comment:deleted":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	case "mirror:repo_synchronized":
-		return nil, fmt.Errorf("'%s' not implemented", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' not implemented", event)
 	default:
-		return nil, fmt.Errorf("'%s' is not a valid Bitbucket Webhook event type", bitbucketEvent)
+		return nil, fmt.Errorf("'%s' is not a valid Bitbucket Webhook event type", event)
 	}
 }
 
