@@ -48,7 +48,6 @@ type Webhook struct {
 // Example 2: creates a webhook with a secret and presevse the *http.Request body.
 //  hook := webhook.New(WithSecret("WEBHOOK_SECRET"), PreserveBody())
 //
-
 func New(options ...Option) *Webhook {
 	const (
 		defaultPreserveRequestBody   = false
@@ -67,7 +66,7 @@ func New(options ...Option) *Webhook {
 	return w
 }
 
-// Secret is used to set a Webook's secret. This must be used when accepting requests from a Bitbucket
+// WithSecret is used to set a Webook's secret. This must be used when accepting requests from a Bitbucket
 // webhook that has a secret set, and the value of secret must match that of the Bitbucket webhook this library is accepting
 // requests from.
 func WithSecret(secret string) Option {
