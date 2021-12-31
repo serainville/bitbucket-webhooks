@@ -1,4 +1,11 @@
-default: test coverage
+default: lint vet test coverage
+
+lint:
+	golint
+	golangci-lint run
+
+vet:
+	go vet
 
 test:
 	go test -coverprofile=coverage.out ./...
