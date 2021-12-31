@@ -17,21 +17,79 @@ import (
 type Event string
 
 // Option holds a webhook option
-type Option string
+type Option func(*Webhook)
 
 // Webhook is used to handle Bitbucket webhook events
 type Webhook struct {
-	secret string
+	secret                string
+	preserveRequestBody   bool
+	disableHMACValidation bool
 }
 
-// New creates a new Webhook with default settings
+// New creates a new Webhook with default settings. The default Webhook does not set a Webhook Secret and
+// will not attempt to preserve the body of a `*http.Request` after it has been read. However, options can
+// be used to change the default behaviour of a new webhook.
+//
+// Options:
+//  WithSecret("WEBHOOK_SECRET")
+//  PreserveBody()
+//  WithoutHMAC()
+//
+// WithSecret sets the webhook secret that is used as a key when validating a Bitbucket HMAC signature.
+//
+// PreserveBody preserves the *http.Request body after being read by a webhook.
+//
+// WithoutHMAC disables HMAC validation. When set to true, an incoming Bitbucket Webhook request will not be checked to ensure
+// it matches its X-Hub-Signature hash. This should not be used in production environments.
+//
+// Example 1: creates a default webhook
+//  webhook.New()
+//
+// Example 2: creates a webhook with a secret and presevse the *http.Request body.
+//  hook := webhook.New(WithSecret("WEBHOOK_SECRET"), PreserveBody())
+//
 func New(options ...Option) *Webhook {
-	return &Webhook{}
+	const (
+		defaultPreserveRequestBody   = false
+		defaultDisableHMACValidation = false
+	)
+
+	w := &Webhook{
+		preserveRequestBody:   defaultPreserveRequestBody,
+		disableHMACValidation: defaultDisableHMACValidation,
+	}
+
+	for _, opt := range options {
+		opt(w)
+	}
+
+	return w
 }
 
-// Secret is used to set a Webook's secret
-func (hook *Webhook) Secret(value string) {
-	hook.secret = value
+// WithSecret is used to set a Webook's secret. This must be used when accepting requests from a Bitbucket
+// webhook that has a secret set, and the value of secret must match that of the Bitbucket webhook this library is accepting
+// requests from.
+func WithSecret(secret string) Option {
+	return func(w *Webhook) {
+		w.secret = secret
+	}
+}
+
+// PreserveBody is used when the body of a `*http.Request` needs to be read by other processes. By default,
+// anytime the body of a `*http.Request` is read its contents are cleared.
+func PreserveBody() Option {
+	return func(w *Webhook) {
+		w.preserveRequestBody = true
+	}
+}
+
+// WithoutHMAC diables HMAC Signature validation. All incoming events should be validated using their included
+// HMAC signature, when included in a X-Hub-Signature header, to verify its authenticity and integrity. By disabling
+// this check an event may come from an untrusted source or have been modified on route.
+func WithoutHMAC() Option {
+	return func(w *Webhook) {
+		w.disableHMACValidation = true
+	}
 }
 
 // Parse an a Bitbucket Webhook request. The HMAC signature of the request will be validated

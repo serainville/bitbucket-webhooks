@@ -41,7 +41,7 @@ In order for HMAC signatures to be validated, a webhook must have a secret set. 
 hook.Secret("WEBHOOK_SECRET")
 ```
 
-The following example shows an implementation that sets the secret and then performs an event parse.
+The following example shows an implementation which sets the expected Bitbucket Webhook secret for HMAC validation.
 
 ```golang
 import (
@@ -49,8 +49,7 @@ import (
 )
 
 func handleBitbucketEvents(w http.ResponseWriter, r *http.Request) {
-    hook := webhook.New()
-    hook.Secret("WEBHOOK_SECRET")
+    hook := webhook.New(WithSecret("WEBHOOK_SECRET"))
 
     err := hook.Parse(r)
     ...
@@ -68,13 +67,9 @@ The `Parse(*http.Request)` does not return a struct. Rather, an `interface{}` is
 The event type of a returned event can be reflected back using `event.(type)`. This allows further processing of returned events based on its event type.
 
 
-
-The following example shows how s how to 
-
 ```golang
 func handlePullRequests(resp http.ResponseWriter, req *http.Request) {
-	hook := v1.New()
-	hook.Secret("WEBHOOK_SECRET")
+	hook := v1.New(WithSecret("WEBHOOK_SECRET"))
 
 	event, err := hook.Parse(req)
 	if err != nil {
@@ -120,8 +115,7 @@ import (
 )
 
 func handlePullRequests(resp http.ResponseWriter, req *http.Request) {
-	hook := bitbucket.New()
-	hook.Secret("WEBHOOK_SECRET")
+	hook := bitbucket.New(WithSecret("WEBHOOK_SECRET"))
 
 	event, err := hook.Parse(req)
 	if err != nil {
