@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-// Using https://github.com/go-playground/webhooks/blob/master/bitbucket-server/bitbucketserver.go as a reference
-
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/pullrequest", handlePullRequest)
