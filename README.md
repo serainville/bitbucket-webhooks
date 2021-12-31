@@ -113,10 +113,10 @@ The following examples sends a message to a Slack channel whenever a Bitbucket W
 
 ```golang
 import (
-	"fmt"
+    "fmt"
 
     bitbucket "github.com/serainville/bitbucket-webhooks"
-	"github.com/slack-go/slack"
+    "github.com/slack-go/slack"
 )
 
 func handlePullRequests(resp http.ResponseWriter, req *http.Request) {
