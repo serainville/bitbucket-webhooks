@@ -53,10 +53,20 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			Name:         "invalid pr:opened, wrong secret set",
+			Body:         NewPullRequestOpened(),
+			ExpectedErr:  true,
+			ExpectedType: PullRequestOpenedPayload{},
+			Secret:       "bad secret",
+			Header: map[string][]string{
+				"X-Event-Key":     {"pr:opened"},
+				"X-Hub-Signature": {"sha256=f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8"},
+			},
+		},
+		{
 			Name:         "valid pr:comment:added",
 			Body:         NewPullRequestOpened(),
 			ExpectedErr:  false,
-			Secret:       "i am groot test",
 			ExpectedType: PullRequestCommentAddedPayload{},
 			Header: map[string][]string{
 				"X-Event-Key": {"pr:comment:added"},
