@@ -1,4 +1,4 @@
-package bitbucketwebhooks
+package bitbucket
 
 // EventKey stores the key for an event received by Bitbucket
 type EventKey string

@@ -1,4 +1,5 @@
-package bitbucketwebhooks
+// Package bitbucket is library for handling Bitbucket Server webhook events and HMAC validation
+package bitbucket
 
 import (
 	"crypto/hmac"
