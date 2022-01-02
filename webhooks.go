@@ -154,17 +154,29 @@ func (hook *Webhook) Parse(req *http.Request) (interface{}, error) {
 		err := json.Unmarshal(payload, &pl)
 		return pl, err
 	case "repo:refs_changed":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoRefsChangedPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "repo:modified":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoModifiedPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "repo:forked":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoForkPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "repo:comment:added":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoCommentAddedPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "repo:comment:edited":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoCommentEditedPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "repo:comment:deleted":
-		return nil, fmt.Errorf("'%s' not implemented", event)
+		var pl RepoCommentDeletedPayload
+		err := json.Unmarshal(payload, &pl)
+		return pl, err
 	case "mirror:repo_synchronized":
 		return nil, fmt.Errorf("'%s' not implemented", event)
 	default:

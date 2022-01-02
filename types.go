@@ -136,6 +136,37 @@ type FromRefUpdatedPayload struct {
 	PreviousFromHash string `json:"previousFramHash"`
 }
 
+// RepoForkPayload maps to `repo:forked` Bitbucket webhook events
+type RepoForkPayload struct {
+	Actor      `json:"actor"`
+	Repository `json:"repository"`
+}
+
+// RepoCommentAddedPayload maps to `repo:comment:added` Bitbucket webhook events
+type RepoCommentAddedPayload struct {
+	Actor      `json:"actor"`
+	Comment    `json:"comment"`
+	Repository `json:"repository"`
+	Commit     string `json:"commit"`
+}
+
+// RepoCommentEditedPayload maps to `repo:comment:edited` Bitbucket Webhook events
+type RepoCommentEditedPayload struct {
+	Actor           `json:"actor"`
+	Comment         `json:"comment"`
+	PreviousComment string `json:"previousComment"`
+	Repository      `json:"repository"`
+	Commit          string `json:"commit"`
+}
+
+// RepoCommentDeletedPayload maps to `repo:comment:deleted` Bitbucket Webhook events
+type RepoCommentDeletedPayload struct {
+	Actor      `json:"actor"`
+	Comment    `json:"comment"`
+	Repository `json:"repository"`
+	Commit     string `json:"commit"`
+}
+
 // Actor represents the actor field of a Bitbucket Webhook request
 type Actor struct {
 	Name         string `json:"name"`
@@ -180,6 +211,17 @@ type Repository struct {
 	Forkable      bool   `json:"forkable"`
 	Project       `json:"project"`
 	Public        bool `json:"public"`
+	Origin        struct {
+		Slug          string `json:"slug"`
+		ID            uint64 `json:"id"`
+		Name          string `json:"name"`
+		ScmID         string `json:"scmId"`
+		State         string `json:"state"`
+		StatusMessage string `json:"statusMessage"`
+		Forkable      bool   `json:"forkable"`
+		Project       `json:"project"`
+		Public        bool `json:"public"`
+	} `json:"origin,omitempty"`
 }
 
 // Project maps to the project key from a Bitbucket event
