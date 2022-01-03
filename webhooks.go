@@ -1,4 +1,5 @@
-// Package bitbucket is library for handling Bitbucket Server webhook events and HMAC validation
+// Package bitbucket is a library for handling Bitbucket Server webhook events and for performing HMAC validation. Use it when you want to handle
+// incoming Bitbucket Webhook events.
 package bitbucket
 
 import (
@@ -32,21 +33,20 @@ type Webhook struct {
 // be used to change the default behaviour of a new webhook.
 //
 // Options:
-//  WithSecret("WEBHOOK_SECRET")
-//  PreserveBody()
-//  WithoutHMAC()
+// - WithSecret("WEBHOOK_SECRET")
+// - PreserveBody()
+// - WithoutHMAC()
 //
 // WithSecret sets the webhook secret that is used as a key when validating a Bitbucket HMAC signature.
 //
 // PreserveBody preserves the *http.Request body after being read by a webhook.
 //
-// WithoutHMAC disables HMAC validation. When set to true, an incoming Bitbucket Webhook request will not be checked to ensure
-// it matches its X-Hub-Signature hash. This should not be used in production environments.
+// WithoutHMAC disables HMAC validation. When set to true, the X-Hub-Signature will not be validated. This should not be used in production environments.
 //
-// Example 1: creates a default webhook
+// Example 1: Default Webhook
 //  webhook.New()
 //
-// Example 2: creates a webhook with a secret and presevse the *http.Request body.
+// Example 2: Set Webhook Secret
 //  hook := webhook.New(WithSecret("WEBHOOK_SECRET"), PreserveBody())
 //
 func New(options ...Option) *Webhook {
@@ -67,17 +67,15 @@ func New(options ...Option) *Webhook {
 	return w
 }
 
-// WithSecret is used to set a Webook's secret. This must be used when accepting requests from a Bitbucket
-// webhook that has a secret set, and the value of secret must match that of the Bitbucket webhook this library is accepting
-// requests from.
+// WithSecret is used to set the secret key for a webook secret. If a Bitbucket Server Webhook is configured to use a secret, this must be set to the same value.
 func WithSecret(secret string) Option {
 	return func(w *Webhook) {
 		w.secret = secret
 	}
 }
 
-// PreserveBody is used when the body of a `*http.Request` needs to be read by other processes. By default,
-// anytime the body of a `*http.Request` is read its contents are cleared.
+// PreserveBody is used if further processing of an *http.Request body is needed by other processes. This option ensurse the body is not cleared
+// after it has been read by the Parse function.
 func PreserveBody() Option {
 	return func(w *Webhook) {
 		w.preserveRequestBody = true
@@ -85,15 +83,15 @@ func PreserveBody() Option {
 }
 
 // WithoutHMAC diables HMAC Signature validation. All incoming events should be validated using their included
-// HMAC signature, when included in a X-Hub-Signature header, to verify its authenticity and integrity. By disabling
-// this check an event may come from an untrusted source or have been modified on route.
+// HMAC signature, when included in a X-Hub-Signature header. By disabling this check an event may come from an untrusted source
+// or have been modified onroute.
 func WithoutHMAC() Option {
 	return func(w *Webhook) {
 		w.disableHMACValidation = true
 	}
 }
 
-// Parse an a Bitbucket Webhook request. The HMAC signature of the request will be validated
+// Parse an Bitbucket Webhook request and return a matching struct. The HMAC signature of the request will be validated
 // when the 'X-Hub-Signature' header key is set.
 func (hook *Webhook) Parse(req *http.Request) (interface{}, error) {
 
@@ -184,7 +182,7 @@ func (hook *Webhook) Parse(req *http.Request) (interface{}, error) {
 	}
 }
 
-// VerifySignature is used to check an HMAC signature
+// VerifySignature is used to check an HMAC signature of a Bitbucket webhook request
 func (hook *Webhook) VerifySignature(payload []byte, encodedHash, secret string) error {
 	if encodedHash == "" {
 		return nil
