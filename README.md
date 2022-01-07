@@ -21,17 +21,48 @@ import (
 )
 ```
 ## Parsing Webhook Events
-Events are parsed using the the `Parse(*http.Request)` Webhook method. The method accepts `http.Request` variables.
+Events are parsed using the the `Parse(r *http.Request)` Webhook method. The function returns to data types:
+
+- interface{}
+- error
+
+The interface will contain the event type the request is mapped to based on the `X-Event-Key` header found in a Bitbucket Webhook request. 
+
+
 
 ```golang
 func handleEvent(w http.ResponseWriter, r *http.Request) {
     hook := webhook.New()
 
-    err := hook.Parse(r)
+    _, err := hook.Parse(r)
     if err != nil {
-        r.Write([]byte("failed to parse webhook"))
+        http.Error(w, err.Error(), http.StatusBadRequest))
         log.Println(err)
     }
+}
+
+```
+
+The example above ignores the returned interface type. However, additional processing of an event can be performed to all event types or for specific types only. The following example shows how a `switch` logical can be used to further process `pr:opened` and `pr:merged` Bitbucket Webhook events.
+
+```golang
+func handleEvent(w http.ResponseWriter, r *http.Request) {
+    hook := webhook.New()
+
+    event, err := hook.Parse(r)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest))
+        log.Println(err)
+    }
+
+	switch evt := event.(type) {
+		case PullRequestOpenedPayload:
+			// perform additional steps on pr:opened events
+		case PullRequestMergedPayload:
+			// perform additional steps on pr:merged events
+		default:
+			// Do nothing or process all other event types the same
+	}
 }
 
 ```
