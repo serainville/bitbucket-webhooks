@@ -3,6 +3,7 @@
 package bitbucket
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -108,6 +109,10 @@ func (hook *Webhook) Parse(req *http.Request) (interface{}, error) {
 	payload, err := ioutil.ReadAll(req.Body)
 	if err != nil || len(payload) == 0 {
 		return nil, fmt.Errorf("could not read request body: %w", err)
+	}
+
+	if hook.preserveRequestBody {
+		req.Body = ioutil.NopCloser(bytes.NewBuffer(payload))
 	}
 
 	if err := hook.VerifySignature(payload, req.Header.Get("X-Hub-Signature"), hook.secret); err != nil {
